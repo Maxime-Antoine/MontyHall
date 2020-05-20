@@ -1,12 +1,11 @@
 ﻿open System
 
-let N = 10000
 let rnd = Random()
 
 type Step1 = { Prize: int; Choice: int }
 type Step2 = { Prize: int; Choice: int; Eliminated: int; }
 
-let generateGames n = Seq.init n (fun _ -> { Prize = rnd.Next(1, 4); Choice = rnd.Next(1, 4)})
+let generateGames n = Seq.init n (fun _ -> { Prize = rnd.Next(1, 4); Choice = rnd.Next(1, 4) })
 
 let rec eliminateBadChoice (step1: Step1) = 
     let eliminated = rnd.Next(1, 4)
@@ -17,15 +16,16 @@ let rec eliminateBadChoice (step1: Step1) =
 let didWinWithoutChange step2 = step2.Choice = step2.Prize
 let didWinWithChange step2 = step2.Prize <> step2.Choice
 
-let toPct n = (float n) / (float N) * 100.
-let simulate n winFn = generateGames N |> Seq.map eliminateBadChoice |> Seq.filter winFn |> Seq.length |> toPct
+let toPct total nb = (float nb) / (float total) * 100.
+let simulate n winFn = generateGames n |> Seq.map eliminateBadChoice |> Seq.filter winFn |> Seq.length |> toPct n
 
 [<EntryPoint>]
 let main argv =
-    let noChangePct = simulate N didWinWithoutChange
-    let changePct = simulate N didWinWithChange
+    let n = if argv.Length > 0 then argv.[0] |> int else 10000
+    let noChangePct = simulate n didWinWithoutChange
+    let changePct = simulate n didWinWithChange
 
-    printfn "After %i simulations of each case:" N
+    printfn "After %i simulations of each case:" n
     printfn "Win sticking to initial choice: %f%%" noChangePct
     printfn "Win changing initial choice: %f%%" changePct
     0 
