@@ -19,13 +19,17 @@ let didWinWithChange step2 = step2.Prize <> step2.Choice
 let toPct total nb = (float nb) / (float total) * 100.
 let simulate n winFn = generateGames n |> Seq.map eliminateBadChoice |> Seq.filter winFn |> Seq.length |> toPct n
 
+
 [<EntryPoint>]
 let main argv =
     let n = if argv.Length > 0 then argv.[0] |> int else 10000
+
+    let timer = Diagnostics.Stopwatch()
+    timer.Start()
     let noChangePct = simulate n didWinWithoutChange
     let changePct = simulate n didWinWithChange
 
-    printfn "After %i simulations of each case:" n
+    printfn "After %i simulations of each case in %ims:" n timer.ElapsedMilliseconds
     printfn "Win sticking to initial choice: %f%%" noChangePct
     printfn "Win changing initial choice: %f%%" changePct
-    0 
+    0
